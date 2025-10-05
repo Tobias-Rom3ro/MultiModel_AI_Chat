@@ -9,95 +9,85 @@ def update_models(provider):
     return gr.Dropdown(choices=models, value=models[0] if models else None)
 
 
-def update_translation_visibility(task):
+def update_translation_and_image_visibility(task):
     is_translation = (task == "Traducción")
-    return gr.Dropdown(visible=is_translation), gr.Dropdown(visible=is_translation)
+    show_image = (task == "VQA")
+    return (
+        gr.Dropdown(visible=is_translation),
+        gr.Dropdown(visible=is_translation),
+        gr.Image(visible=show_image),
+    )
 
 
-def chat_function(message, history, provider, model, task, source_lang, target_lang):
-    response = ai_service.process_task(
+def chat_function(message, history, provider, model, task, source_lang, target_lang, image_path):
+    return ai_service.process_task(
         provider=provider,
         model=model,
         task=task,
         input_text=message,
         source_lang=source_lang,
-        target_lang=target_lang
+        target_lang=target_lang,
+        image_path=image_path,
     )
-
-    return response
 
 
 def create_interface():
-    initial_provider = "OpenRouter AI"
-    initial_models = get_available_models(initial_provider)
-    initial_model = initial_models[0] if initial_models else None
+    providers = get_all_providers()
+    tasks = get_all_tasks()
 
-    with gr.Blocks(title="Multi-Model AI Chat", theme=gr.themes.Soft()) as app:
-        gr.Markdown(
-            """
-            # 💬 Multi-Model AI Chat
-            Chatea con diferentes modelos de IA para realizar traducciones y resúmenes.
-            """
-        )
+    with gr.Blocks(title="Multi-Model AI Chat") as app:
+        gr.Markdown("# Multi-Model AI Chat")
 
         with gr.Row():
-            with gr.Column(scale=1):
-                gr.Markdown("### ⚙️ Configuración")
+            provider_dropdown = gr.Dropdown(
+                choices=providers,
+                value=providers[0] if providers else None,
+                label="Proveedor"
+            )
+            model_dropdown = gr.Dropdown(
+                choices=get_available_models(providers[0]) if providers else [],
+                value=(get_available_models(providers[0])[0]
+                       if providers and get_available_models(providers[0]) else None),
+                label="Modelo"
+            )
+            task_dropdown = gr.Dropdown(
+                choices=tasks,
+                value=tasks[0] if tasks else None,
+                label="Tarea"
+            )
 
-                provider_dropdown = gr.Dropdown(
-                    choices=list(get_all_providers()),
-                    value=initial_provider,
-                    label="Proveedor",
-                    info="Selecciona el proveedor de IA"
-                )
+        with gr.Row():
+            source_lang = gr.Dropdown(
+                choices=AVAILABLE_LANGUAGES,
+                value="español",
+                label="Idioma origen",
+                visible=True
+            )
+            target_lang = gr.Dropdown(
+                choices=AVAILABLE_LANGUAGES,
+                value="inglés",
+                label="Idioma destino",
+                visible=True
+            )
 
-                model_dropdown = gr.Dropdown(
-                    choices=initial_models,
-                    value=initial_model,
-                    label="Modelo",
-                    info="Selecciona el modelo a usar"
-                )
+        # ¡IMPORTANTE! Crear image_input ANTES de usarlo en .change(...)
+        image_input = gr.Image(
+            label="Imagen para VQA",
+            type="filepath",
+            visible=False
+        )
 
-                task_dropdown = gr.Dropdown(
-                    choices=list(get_all_tasks()),
-                    value="Traducción",
-                    label="Tarea",
-                    info="Selecciona la tarea a realizar"
-                )
-
-                source_lang = gr.Dropdown(
-                    choices=AVAILABLE_LANGUAGES,
-                    value="español",
-                    label="Idioma de origen",
-                    visible=True
-                )
-
-                target_lang = gr.Dropdown(
-                    choices=AVAILABLE_LANGUAGES,
-                    value="inglés",
-                    label="Idioma destino",
-                    visible=True
-                )
-
-            with gr.Column(scale=2):
-
-                chatbot = gr.ChatInterface(
-                    fn=chat_function,
-                    textbox=gr.Textbox(
-                        placeholder="Escribe tu mensaje aquí...",
-                        container=False,
-                        scale=7
-                    ),
-                    type="messages",
-                    submit_btn="Enviar",
-                    additional_inputs=[
-                        provider_dropdown,
-                        model_dropdown,
-                        task_dropdown,
-                        source_lang,
-                        target_lang
-                    ]
-                )
+        gr.ChatInterface(
+            fn=chat_function,
+            additional_inputs=[
+                provider_dropdown,
+                model_dropdown,
+                task_dropdown,
+                source_lang,
+                target_lang,
+                image_input,
+            ],
+        )
 
         provider_dropdown.change(
             fn=update_models,
@@ -106,9 +96,9 @@ def create_interface():
         )
 
         task_dropdown.change(
-            fn=update_translation_visibility,
+            fn=update_translation_and_image_visibility,
             inputs=[task_dropdown],
-            outputs=[source_lang, target_lang]
+            outputs=[source_lang, target_lang, image_input]
         )
 
     return app
