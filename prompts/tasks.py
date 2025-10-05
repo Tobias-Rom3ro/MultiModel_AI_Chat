@@ -6,6 +6,10 @@ TASK_PROMPTS = {
     "Resumen": {
         "system": "Eres un asistente experto en resumir textos. Proporciona resúmenes concisos y precisos que capturen las ideas principales.",
         "user_template": "Resume el siguiente texto de manera concisa:\n\n{text}"
+    },
+    "VQA": {
+        "system": "Eres un experto en interpretación visual. Responde preguntas sobre una imagen de forma breve, directa y basada SOLO en lo visible. Si la pregunta no puede responderse con la imagen, di claramente \"No se puede determinar con la imagen\".",
+        "user_template": "Pregunta sobre la imagen: {text}. Responde en español."
     }
 }
 
