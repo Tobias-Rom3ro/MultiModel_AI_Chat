@@ -1,0 +1,20 @@
+🧠 Reflexión técnica: aprendizajes, límites y mejoras
+
+**Aprendizaje**
+
+- **Arquitectura multi-proveedor**: abstraer llamadas a OpenRouter, Groq y Google AI detrás de un servicio común simplifica cambiar de modelo en caliente y facilita el manejo de errores/timeout por proveedor. Separar config/, prompts/, services/ y ui/ hizo el código más mantenible.
+- **Modelos por tarea**: traducción y resumen funcionan bien con modelos ligeros; tareas multimodales (VQA) exigen modelos con visión y aumentan latencia por el procesamiento de la imagen. La app lo evidencia al mostrar tiempos de inferencia.
+- **Diseño de prompts**: los prompts “más pesados” (más contexto, restricciones y ejemplos) generan respuestas más consistentes y alineadas con el formato pedido; a cambio consumen más tokens, suben la latencia y el costo. Para traducción suele bastar un prompt mínimo; para resumen y VQA conviene un marco explícito (objetivo, tono, longitud, y reglas como “responder solo con lo visible”).
+- **UI centrada en flujo**: dropdowns de Proveedor/Tarea/Modelo + historial ayudan a comparar resultados rápido y a depurar problemas.
+
+**Límites encontrados**
+
+- **Heterogeneidad de APIs**: cada proveedor tiene matices (nombres de modelos, formatos de mensajes, manejo de imágenes). Sin una capa de adaptación, aparecen errores sutiles.
+- **Latencia y variabilidad**: cambia por tamaño del modelo, carga del proveedor y ancho de banda (especialmente en VQA por el upload/encode de imágenes). Algunos modelos no soportan ciertas tareas o devuelven errores crípticos.
+
+**Posibles mejoras**
+
+- Proveedor adicional (Ollama) para correr modelos locales y cumplir “puntos extra”.
+- Métricas rápidas en UI: longitud del output, tokens estimados, costo aproximado y throughput.
+- Streaming y cancelación para mejorar UX en respuestas largas.
+- Plantillas de prompt parametrizables (temperatura, longitud objetivo, estilo).
