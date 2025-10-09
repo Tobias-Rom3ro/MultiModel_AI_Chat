@@ -15,9 +15,11 @@ Realizada como tarea del curso de MLOps.
 - **Interfaz de chat intuitiva**: Conversaciones fluidas con historial completo
 - **Traducción multiidioma**: Traduce entre 8 idiomas diferentes con selección de idioma origen y destino
 - **Resumen de textos**: Resume textos de manera concisa y precisa
+- **VQA (Visual Question Answering)**: Haz preguntas sobre una imagen y obtén respuestas breves y basadas solo en lo visible
 - **Cambio dinámico**: Cambia de proveedor, modelo o tarea en cualquier momento
 - **Modular y escalable**: Código bien estructurado y fácil de mantener
 
+**Nota**: VQA requiere usar modelos multimodales (entrada de imagen). Asegúrate de escoger un modelo compatible en el proveedor elegido.
 ---
 
 ## 📁 Estructura del Proyecto
@@ -67,7 +69,7 @@ Maneja toda la lógica de comunicación con las APIs:
 
 #### 📂 `ui/interface.py`
 Construye la interfaz de usuario:
-- Configuración de componentes de Gradio
+- Configuración de componentes de Gradio (texto e imagen para VQA)
 - Layout de la aplicación
 - Eventos y funciones de actualización
 - Integración con el servicio de IA
@@ -137,6 +139,7 @@ La aplicación se abrirá automáticamente en tu navegador en `http://localhost:
 3. **Selecciona la Tarea**: 
    - **Traducción**: Convierte texto de un idioma a otro
    - **Resumen**: Resume textos de manera concisa
+   - **VQA**: Sube una imagen y escribe tu pregunta; la respuesta se basará solo en lo visible
 4. **Configura los idiomas** (solo para traducción):
    - **Idioma de origen**: El idioma del texto original
    - **Idioma destino**: El idioma al que quieres traducir
