@@ -5,7 +5,6 @@ Una aplicación de chat interactiva construida con Gradio que permite utilizar d
 Realizada como tarea del curso de MLOps.
 
 ![App Screenshot](./app.png)
-<!-- Inserta aquí una captura de pantalla de tu aplicación -->
 
 ---
 
@@ -19,7 +18,7 @@ Realizada como tarea del curso de MLOps.
 - **Cambio dinámico**: Cambia de proveedor, modelo o tarea en cualquier momento
 - **Modular y escalable**: Código bien estructurado y fácil de mantener
 
-**Nota**: VQA requiere usar modelos multimodales (entrada de imagen). Asegúrate de escoger un modelo compatible en el proveedor elegido.
+
 ---
 
 ## 📁 Estructura del Proyecto
